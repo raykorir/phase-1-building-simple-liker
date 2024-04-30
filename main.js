@@ -5,6 +5,43 @@ const FULL_HEART = '♥'
 // Your JavaScript code goes here!
 
 
+document.addEventListener('DOMContentLoaded', function() {
+  const errorModal = document.getElementById('modal');
+  const hearts = document.querySelectorAll('.like-glyph');
+
+  // Add the .hidden class to the error modal initially
+  errorModal.classList.add('hidden');
+
+  // Event listener for clicks on heart icons
+  hearts.forEach(heart => {
+    heart.addEventListener('click', function(event) {
+      const heartIcon = event.target;
+      if (heartIcon.classList.contains('activated-heart')) {
+        // If the heart is already filled, remove the activated class and change it back to empty heart
+        heartIcon.classList.remove('activated-heart');
+        heartIcon.textContent = EMPTY_HEART;
+      } else {
+        // If the heart is empty, try to like it
+        mimicServerCall()
+          .then(() => {
+            // If the server call is successful, fill the heart and add the activated class
+            heartIcon.textContent = FULL_HEART;
+            heartIcon.classList.add('activated-heart');
+          })
+          .catch(error => {
+            // If the server call fails, display the error modal with the error message
+            const errorMessage = document.getElementById('modal-message');
+            errorMessage.textContent = error;
+            errorModal.classList.remove('hidden');
+            // Hide the modal after 3 seconds
+            setTimeout(() => {
+              errorModal.classList.add('hidden');
+            }, 3000);
+          });
+      }
+    });
+  });
+});
 
 
 //------------------------------------------------------------------------------
